@@ -1,0 +1,86 @@
+# Ignore common audio and video files
+*.mp3
+*.mp4
+*.mkv
+*.avi
+*.wav
+*.flac
+*.ogg
+*.wmv
+*.mov
+*.mpeg
+*.mpg
+*.webm
+*.m4a
+*.aac
+
+# Ignore Procfile
+Procfile
+
+# Ignore __pycache__ folder
+__pycache__/
+
+# Ignore compiled bytecode files
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment directories
+venv/
+env/
+ENV/
+.venv/
+.ENV/
+
+# Ignore distributions
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Ignore pipenv files
+Pipfile.lock
+
+# Ignore mypy type checking files
+.mypy_cache/
+
+# Ignore pytest cache
+.pytest_cache/
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore logs
+*.log
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore dotenv environment variable file
+.env
+.env.*
+
+# Ignore Docker files
+Dockerfile
+docker-compose.yml
+*.env
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore macOS system files
+.AppleDouble
+.LSOverride
+
+# Ignore Windows system files
+desktop.ini

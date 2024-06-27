@@ -239,7 +239,7 @@ async def stop(ctx):
 @bot.command()
 async def about(ctx):
     """Provides information about the bot"""
-    embed = discord.Embed(title="Tentang Aku!~", description="Hi!, aku adalah Official Bot Discord untuk server Aca Natasha!.", color=discord.Color.blue())
+    embed = discord.Embed(title="Tentang Aku!~", description="Hi!, aku adalah Official Bot Discord untuk kesayangan aku Noufal Zaidaan.", color=discord.Color.blue())
     embed.add_field(name="Developer", value="boullevard", inline=False)
     embed.add_field(name="Purpose", value="Untuk menemanimu dalam keseharianmu!", inline=False)
     embed.add_field(name="Commands", value="""
@@ -256,6 +256,7 @@ async def about(ctx):
     ^about - Show this message.
     ^support - Support server ini dengan meramaikannya!.
     ^love - Seberapa love sih kalian xixi   
+    ^server - Biar kalian tau siapa ownernya!
     ^developer - Support developernya dengan https://saweria.co/NoufalZaidan.
     """, inline=False)
     embed.set_footer(text="Teimakasih sudah menggunakan Official Bot Aca Natasha!")
@@ -265,21 +266,54 @@ async def about(ctx):
 async def afk(ctx, *, message="I'm currently AFK."):
     """Sets the user as AFK with a custom message"""
     afk_users[ctx.author.id] = message
-    await ctx.send(f'{ctx.author.mention} is now AFK: {message}')
+    await ctx.send(f'{ctx.author.mention} Sekarang lagi AFK: {message}')
+
+@bot.command()
+async def love(ctx, user1: discord.Member, user2: discord.Member):
+    """Calculates the love percentage between two users"""
+    love_percentage = random.randint(0, 100)
+    embed = discord.Embed(
+        title="Love Percentage!",
+        description=f"❤️ {user1.mention} and {user2.mention} have a love percentage of **{love_percentage}%** ❤️",
+        color=discord.Color.red()
+    )
+    await ctx.send(embed=embed)
 
 @bot.event
 async def on_message(message):
     if message.author.bot:
         return
+        
+    if 'morning' in message.content.lower():
+        await message.channel.send(f'morning darling, hows ur sleep {message.author.mention}?')
+    
+    if 'goodnight' in message.content.lower():
+        await message.channel.send(f'Goodnight darling, sleep well {message.author.mention}')
 
+    if 'pagi' in message.content.lower():
+        await message.channel.send(f'Pagi Juga Kamuu! {message.author.mention}')
+
+    if 'siang' in message.content.lower():
+        await message.channel.send(f'Siang juga kamuu!, udahh makan siang belum {message.author.mention}?')
+
+    if 'sore' in message.content.lower():
+        await message.channel.send(f'Soree!, Jangan lupa istirahat yaa {message.author.mention}!')
+
+    if 'malam' in message.content.lower():
+        await message.channel.send(f'Selamat Malam {message.author.mention}, gimana hari ini??')
+
+    # Check if the message author is AFK and handle AFK logic
     if message.author.id in afk_users:
         afk_users.pop(message.author.id)
-        await message.channel.send(f'Selamat datang kembali! {message.author.mention}, kamu sudah kembali hidup!.')
+        await message.channel.send(f'Halooo Kaaak!{message.author.mention}, kamu udah balikk yaa.')
 
+    # Check mentions for AFK users
     if message.mentions:
         for user in message.mentions:
             if user.id in afk_users:
-                await message.channel.send(f'{user.mention} Orangnya lagi afk kak: {afk_users[user.id]}')
+                await message.channel.send(f'{user.mention} orangnya lagi afk kak!: {afk_users[user.id]}')
+
+    await bot.process_commands(message)
 
     await bot.process_commands(message)
 

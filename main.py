@@ -283,25 +283,25 @@ async def love(ctx, user1: discord.Member, user2: discord.Member):
 async def on_message(message):
     if message.author.bot:
         return
-        
-    if 'morning' in message.content.lower():
-        await message.channel.send(f'morning darling, hows ur sleep {message.author.mention}?')
     
-    if 'goodnight' in message.content.lower():
-        await message.channel.send(f'Goodnight darling, sleep well {message.author.mention}')
-
-    if 'pagi' in message.content.lower():
-        await message.channel.send(f'Pagi Juga Kamuu! {message.author.mention}')
-
-    if 'siang' in message.content.lower():
-        await message.channel.send(f'Siang juga kamuu!, udahh makan siang belum {message.author.mention}?')
-
-    if 'sore' in message.content.lower():
-        await message.channel.send(f'Soree!, Jangan lupa istirahat yaa {message.author.mention}!')
-
-    if 'malam' in message.content.lower():
-        await message.channel.send(f'Selamat Malam {message.author.mention}, gimana hari ini??')
-
+    responses = {
+        'hy': f'Hi jugaa kak {message.author.mention}!',
+        'hi': f'Hi jugaa kak {message.author.mention}!',
+        'morning': f'morning darling, hows ur sleep {message.author.mention}?',
+        'goodnight': f'Goodnight darling, sleep well {message.author.mention}',
+        'pagi': f'Pagi Juga Kamuu! {message.author.mention}',
+        'siang': f'Siang juga kamuu!, udahh makan siang belum {message.author.mention}?',
+        'sore': f'Soree!, Jangan lupa istirahat yaa {message.author.mention}!',
+        'malam': f'Selamat Malam {message.author.mention}, gimana hari ini??'
+    }
+    
+    message_content = message.content.lower()
+    
+    for key, response in responses.items():
+        if key in message_content:
+            await message.channel.send(response)
+            break
+    
     # Check if the message author is AFK and handle AFK logic
     if message.author.id in afk_users:
         afk_users.pop(message.author.id)
@@ -312,8 +312,6 @@ async def on_message(message):
         for user in message.mentions:
             if user.id in afk_users:
                 await message.channel.send(f'{user.mention} orangnya lagi afk kak!: {afk_users[user.id]}')
-
-    await bot.process_commands(message)
 
     await bot.process_commands(message)
 

@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import yt_dlp as youtube_dl
 import asyncio
 import logging
@@ -9,6 +9,8 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import config
 from nextcord import File, ButtonStyle, Embed, Color, SelectOption, Intents, Interaction, SlashOption, Member
 from nextcord.ui import Button, View, Select
+import re
+from datetime import datetime, timedelta, timezone
 
 # Change logging level from DEBUG to INFO
 logging.basicConfig(level=logging.INFO)
@@ -69,6 +71,15 @@ async def on_ready():
 
     activity = discord.Streaming(name="OFFICIAL DISCORD ACA NATASHA", url="https://twitch.tv/fal0_")
     await bot.change_presence(status=discord.Status.online, activity=activity)
+    update_time.start()
+
+@tasks.loop(seconds=60)  # Updates every minute
+async def update_time():
+    for guild in bot.guilds:
+        category = discord.utils.get(guild.categories, name="Real-time Clock")
+        if category:
+            current_time = datetime.now().strftime("%H:%M:%S")
+            await category.edit(name=f"Real-time Clock: {current_time}")
 
 @bot.command()
 async def ping(ctx):
@@ -239,7 +250,7 @@ async def stop(ctx):
 @bot.command()
 async def about(ctx):
     """Provides information about the bot"""
-    embed = discord.Embed(title="Tentang Aku!~", description="Hi!, aku adalah Official Bot Discord untuk kesayangan aku Noufal Zaidaan.", color=discord.Color.blue())
+    embed = discord.Embed(title="Tentang Aku!~", description="Hi!, aku adalah Official Bot Discord untuk server Aca Natasha!.", color=discord.Color.blue())
     embed.add_field(name="Developer", value="boullevard", inline=False)
     embed.add_field(name="Purpose", value="Untuk menemanimu dalam keseharianmu!", inline=False)
     embed.add_field(name="Commands", value="""
@@ -256,7 +267,6 @@ async def about(ctx):
     ^about - Show this message.
     ^support - Support server ini dengan meramaikannya!.
     ^love - Seberapa love sih kalian xixi   
-    ^server - Biar kalian tau siapa ownernya!
     ^developer - Support developernya dengan https://saweria.co/NoufalZaidan.
     """, inline=False)
     embed.set_footer(text="Teimakasih sudah menggunakan Official Bot Aca Natasha!")
@@ -266,43 +276,30 @@ async def about(ctx):
 async def afk(ctx, *, message="I'm currently AFK."):
     """Sets the user as AFK with a custom message"""
     afk_users[ctx.author.id] = message
-    await ctx.send(f'{ctx.author.mention} Sekarang lagi AFK: {message}')
-
-@bot.command()
-async def love(ctx, user1: discord.Member, user2: discord.Member):
-    """Calculates the love percentage between two users"""
-    love_percentage = random.randint(0, 100)
-    embed = discord.Embed(
-        title="Love Percentage!",
-        description=f"❤️ {user1.mention} and {user2.mention} have a love percentage of **{love_percentage}%** ❤️",
-        color=discord.Color.red()
-    )
-    await ctx.send(embed=embed)
+    await ctx.send(f'{ctx.author.mention} is now AFK: {message}')
 
 @bot.event
 async def on_message(message):
     if message.author.bot:
         return
-    
+    # Define the keywords and their corresponding responses
     responses = {
-        'hy': f'Hi jugaa kak {message.author.mention}!',
-        'hi': f'Hi jugaa kak {message.author.mention}!',
-        'morning': f'morning darling, hows ur sleep {message.author.mention}?',
-        'goodnight': f'Goodnight darling, sleep well {message.author.mention}',
-        'pagi': f'Pagi Juga Kamuu! {message.author.mention}',
-        'siang': f'Siang juga kamuu!, udahh makan siang belum {message.author.mention}?',
-        'sore': f'Soree!, Jangan lupa istirahat yaa {message.author.mention}!',
-        'malam': f'Selamat Malam {message.author.mention}, gimana hari ini??'
+        "hi": f'Hii! Apakabar kamu {message.author.mention}?',
+        "hy": f'Hyy juga kamuu! {message.author.mention}',
+        "pagi": f'Pagii kamu {message.author.mention}, Semangat yaa jalani harinya!',
+        "siang": f'Siangg kamu {message.author.mention}!, Jangan lupa makan siang!',
+        "sore": f'Soree Soree {message.author.mention}!, Udah ada istirahat belum?',
+        "malam": f'Selamat malam {message.author.mention}!, Gimana harinyaa?',
+        
     }
-    
-    message_content = message.content.lower()
-    
-    for key, response in responses.items():
-        if key in message_content:
+
+    # Check if the message contains any of the keywords
+    for keyword, response in responses.items():
+        if message.content.lower() == keyword:
+            # Respond with the corresponding response
             await message.channel.send(response)
-            break
-    
-    # Check if the message author is AFK and handle AFK logic
+            return
+
     if message.author.id in afk_users:
         afk_users.pop(message.author.id)
         await message.channel.send(f'Halooo Kaaak!{message.author.mention}, kamu udah balikk yaa.')
@@ -314,6 +311,7 @@ async def on_message(message):
                 await message.channel.send(f'{user.mention} orangnya lagi afk kak!: {afk_users[user.id]}')
 
     await bot.process_commands(message)
+
 
 @join.before_invoke
 @play.before_invoke

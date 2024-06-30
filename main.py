@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO)
 intents = Intents.default()
 intents.message_content = True
 intents.members = True
+intents.guilds = True
 bot = commands.Bot(command_prefix='^', intents=intents)
 
 # AFK dictionary to store user AFK status and message
@@ -72,6 +73,26 @@ async def on_ready():
     activity = discord.Streaming(name="OFFICIAL DISCORD ACA NATASHA", url="https://twitch.tv/fal0_")
     await bot.change_presence(status=discord.Status.online, activity=activity)
     update_time.start()
+
+@bot.event
+async def on_member_update(before, after):
+    if before.premium_since is None and after.premium_since is not None:
+        channel = discord.utils.get(after.guild.text_channels, name='♡⤷booster')
+        if channel:
+            await channel.send(f'''Terima kasih kak! {after.mention} buat boostnya yaa!💖, Kaloo mau req role bilang disini ajaa sebutin nama role + warna dan kirim foto buat iconnya yaaa!!. 
+Bisa pilih mau dibikinin voice khusus / text ch khusus (owoplayer) bisa sekalian req disini nama channelnyaa yaaa!!
+           
+                               
+ 1 role bisa untuk 2 orang, terimakasihhh 💖''')
+@bot.event
+async def on_member_update(before, after):
+    autoresponder_role = discord.utils.get(after.guild.roles, name="Dummy")
+    if autoresponder_role in after.roles:
+        channel = discord.utils.get(after.guild.text_channels, name='♡⤷booster')
+        if channel:
+            await channel.send(f'''Terima kasih {after.mention} Kaloo mau req role bilang disini ajaa sebutin nama role + warna dan kirim foto buat iconnya yaaa. Bisa pilih mau dibikinin voice khusus / text ch khusus (owoplayer) bisa sekalian req disini nama channelnyaa yaaa.
+            
+1 role bisa untuk 2 orang, terimakasihhh 💖''')
 
 @tasks.loop(seconds=60)  # Updates every minute
 async def update_time():
@@ -290,7 +311,7 @@ async def on_message(message):
         "siang": f'Siangg kamu {message.author.mention}!, Jangan lupa makan siang!',
         "sore": f'Soree Soree {message.author.mention}!, Udah ada istirahat belum?',
         "malam": f'Selamat malam {message.author.mention}!, Gimana harinyaa?',
-        
+        "boost" : f'haloo kakk makasii udh boost, kaloo mau req role bilang disini ajaa yaa!, kalau mau req voice/text khusus sini aja yaa!. 1 Boost bisa 2 akun ya!'
     }
 
     # Check if the message contains any of the keywords
@@ -299,9 +320,9 @@ async def on_message(message):
             # Respond with the corresponding response
             await message.channel.send(response)
             return
-
     if message.author.id in afk_users:
         afk_users.pop(message.author.id)
+        await asyncio.sleep(5)
         await message.channel.send(f'Halooo Kaaak!{message.author.mention}, kamu udah balikk yaa.')
 
     # Check mentions for AFK users
